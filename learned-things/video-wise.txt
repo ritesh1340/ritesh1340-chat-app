@@ -1,0 +1,252 @@
+video 152 ->
+
+1. We created the basic layout, of our app, by installing some of the packages (including doing npm init, and installing express), and also wrote the basic app (hello world type)
+
+2. We also did set up some scripts, in the package.json file, by changing some stuff under the package.json object.
+
+3. I faced a bit of issues, while serving up the static html page, using the static public directory. Hence, for any further project, I can refer this.
+
+-----------------------------------------------------------------------------------------------------------
+
+video 153 ->
+
+The theoretical questions such as : 
+	a. What is socket io
+	b. why is it different from the http protocol
+	c. how does it work
+
+Were answered in this video. So, think about these questions, if you have answers to them, well and good. If not, then, we can once again see this video.
+
+------------------------------------------------------------------------------------------------------------
+
+video 154 -> Using socket.io in the chat-app
+
+	a. We need to install socket.io library.
+
+	b. We need to require the same, in our project
+
+	c. The socketio() function needs to be passed the name of the server, so that, it knows, that on which 	server, it has to be applied. Hence, we need to refactor a bit of our code already written express() hello world code, so that, we can use it, with the socketio.
+
+	c. Now, the client side javascript also needs to be written, so that, when a new person joins, in the browser, we can know about it in the backend server as well.
+
+	d. The client side javascript is written as follows - 
+		d.1. Inside the index.html in the Public directory, we create A PROPER LAYOUT OF THE HTML DOCUMENT.
+			 This is important, since, we need to load in "SCRIPTS" in the html document, so that, we can load in the client side javascript.
+
+			 The current index.html document looks like this - 
+
+			 	<!DOCTYPE html>
+				<html>
+					<head>
+					</head>
+
+					<body>
+
+						<h1 style = "color : red"> 
+							Welcome to the chat app, created by Ritesh
+						</h1>
+
+						<script src="/socket.io/socket.io.js"></script>
+						<script src="/js/chat.js"></script>
+
+					</body>	
+
+				</html>
+
+			 Note the two <script> tags, that are mentioned in the body of the html document. They shall be written like this, so that, we can load the client side javascript like this.
+
+		After doing all this, on refreshing the browser, we shall see the message printed in the console.
+		In the index.js, we wrote this line ->
+
+		io.on ( "connection" , () =>
+		{
+			console.log ( "new web-socket connection established" ) ;  
+		})
+
+		So, this message shall be printed, on each refresh of the browser.
+
+-----------------------------------------------------------------------------------------------------
+
+video 155 : Handling Events (Using the button creation example)
+
+There will be some events, that will be written on the server side, that the client will be handling.
+And, there will also be events, that will be written on the client side, that our browser will be handling.
+We use socket.on() and io.on() methods for that. In order to emit an event, we use io.emit() or socket.emit
+
+io.emit initiates the event for all the users in the chat-app
+socket.emit initiates the event for the single user, that just joined the chat-room.
+
+-----------------------------------------------------------------------------------------------------
+
+video 156 : Challenge and create the actual chat app
+
+1. We start using some things from the HTML DOM. For example, some methods like document.querySelector, addEventListener(), etc. More about this can be found, from the W3 schools.com webiste.
+
+-----------------------------------------------------------------------------------------------------
+
+video 157 : Broadcasting events - 
+
+socket.broadcast.emit() : This function emits a message to everyone, except the current user. This is useful, when let's say, someone is joining, or leaving the chat-server. Everyone (Except the current user) will be notified about the same.
+
+socket.emit() : This function emits the message to the current joinee of the server.
+io.emit() : This function sends the message to everyone, in the chat server.
+
+socket.on ( "disconnet" , () => {}) : This event gets fired, when someone leaves the server.
+We write this event, inside the io.on() event handler itself ( makes sense, as we will be using this event, when someone leaves (and someone will leave, only after he has already joined) ).
+We write the above event on the server side itself, and not on the client side.
+Note - We don't need to use socket.broadcast.emit(), as, the above "disconnet" event will fire, only if the client has already left the server, hence, this is already kind of a broadcast event.
+
+-----------------------------------------------------------------------------------------------------
+
+video 158 : Sharing the location of users - 
+
+If a user consents to share their location, then, we can use the location to share it, to the other users. For this, we can write some client side code.
+Aim -> Fetch the longitude and latitude of someone, using client side javascript
+Then, share the same location with the server.
+And, once it is with the server, then, use the same to send it to all the people in the server.
+The documentation of the same can be found in mdn geolocation.
+
+In order to find the location, of a person, we write 
+
+	navigator.geolocation.getCurrentPosition( (position) => 
+	{
+
+	})
+
+By doing this, we get an object, where one of the properties of that object is latitude and longitude.
+All this will be seen in the client side javascript console.
+
+We can access this object, in chat.js, and then, do whatever we want to do, with this object.
+What we actually did was, creating one more event, in the client side, that will be listened in the server side, using which, we emit the location of the current user, to all the already connected users.
+
+-----------------------------------------------------------------------------------------------------
+
+video 159 : Event Acknoledgements (Done so that the user can know, that he has completed an event)
+
+When a client sends a message, how does he know that the server has already recieved it (The double tick feature on whatsapp)
+
+We will be doing something about this, in this video.
+
+This Acknoledgement is the last argument of the socket.emit() method, which we write in the chat.js (client side) after working with the form.
+
+After doing this, right after we complete some event, we can send some data, that will be visible on the javascript console, through which, we can know, that the current event has been handled.
+
+---------------------------------------------------------------------------------------------------
+
+video 160 : Form and Button states (disabling the button/ re-enabling the button)
+
+The problem for the current user interface is, that on clicking the button of allowing to fetch and send location, we although can still see changes, in the javascript console, but, we don't see anything, on the page changed. Hence, that is a pretty bad user experience, as to how will the user know, what to do next.
+
+Hence, we are going to do something about our buttons, so that, we can judge, that after the event has successfully occured, the button style or something changes, so that, the user knows, that the task has been done.
+
+The aim is to disable the submit button, each and every time, we click it, until the job has been done. 
+What that means is, that let's say, that someone has typed some message, and sent it. Now, until the message has been delivered by the server to all the people in the chat-group, we will disable the button until then.
+
+Now, our button is dynamic, and, this temporary disabling of the button will also prevent any sort of double clicks, that could happen.
+
+Once the message is actually delivered, then, we can re-enable the button, and then, the same user is now, once again ready, to send the message to someone.
+
+we did the same thing, to the location button as well. And this was all for this video.
+
+---------------------------------------------------------------------------------------------------
+
+video 161 : Aim -> To show everything on the browser itself, and not on the console.
+
+we grabbed some scripts, from the link -> https://gist.github.com/andrewjmead/3e3e310aea27f10f7f1ce506b39dfcbe
+
+We included all the links, in our index.js scripts tag.
+
+Now, we need to figure out, where to place our messages in the app.
+For the chat app, it seems suitable, to place it just below the heading.
+
+so, we need to write some HTML element, that shall be placed over there, and then, we shall acccess this template in the chat.js using document.querySelector(), and display wherever we want it.
+
+Like, almost all the videos, we first of all, rendered a static text. And, then, we rendered a dynamic page.
+
+Now, just like we did in handlebars, we would be doing the same. Plus, the kind of code will also be same, in order to serve dynamic pages.
+
+We will place {{dynamicText}} like this, and this will be rendered.
+
+---------------------------------------------------------------------------------------------------
+
+Video 162 - AIM : Render the location messages
+
+For doing something in chat-app
+
+1. First of all, that button shall be available at the front-end. Hence, we shall be serving up some static HTML, to the client side.
+
+Now, when we recieve some data (maybe a message or a button-click), then, that shall be sent to everyone in the chat room. So, for this purpose, the data that we recieve, shall be sent to the server.
+
+After doing this part of the video, this particular thing became clear.
+
+---------------------------------------------------------------------------------------------------
+
+video 163 - Integrating time into the application
+
+We started with writing out some things on the client side javascript console. Using which, we can find out the current time.
+
+We can make use of the time-stamps. Time stamp is something, that is a positive integer, denoting the number of milli-seconds, since some starting date.
+
+We use the moment() library, in order to parse the time-stamps, so that, we can see it in a good format.
+
+--------------------------------------------------------------------------------------------------
+
+video 164 - time-stamps for location messages
+
+This part was symmetric, to what we did before this video. I had just to do it for the location. And this was challenge part, in the video, and I did it myself.
+
+--------------------------------------------------------------------------------------------------
+
+video 165 - Styling the application
+
+This video was meant, to make the application look good to the eye.
+We were provided with a styling sheet, and then, we used that sheet, and did style the application
+
+--------------------------------------------------------------------------------------------------
+
+video 166 - Join page
+
+This video was also about some front-end part, where, we created the join page. Note, the index.html is the home page, that will be served to someone, who opens up the application. Hence, that should create the actual join page, where someone will assign a username for himself, and then, join the chat-room.
+Hence, we need to write some html code for that.
+
+Note, the user shall be given a form here, so that he can enter his username, and the room, and then, start chatting.
+
+Hence, the form shall be re-directed, to the actual HTML page, where chatting is happening.
+
+On the time of redirection, the inputs that were filled in the form, shall be available in the next link, as part of the query string. Hence, we shall be doing something on the query string, in the next video.
+
+--------------------------------------------------------------------------------------------------
+
+video 167 - Rooms ka idea
+So, we could fetch the room, which some user is joining, using the query string. And, then, we could make him join that particular room
+
+Just like we had io.emit() to emit messages to everyone, in the similar way, we have : 
+io.to(roomName).emit() in order to emit the messages, to people, in the same room as "roomName"
+
+We will use this, in order to send our messages from now.
+
+--------------------------------------------------------------------------------------------------
+
+video 168, 169 - Tracking users
+We needed some functionalities, that we established in the utilities folder, in the utils directory.
+These functions were pretty simple, they just were easy for me, because, of my CP background
+
+--------------------------------------------------------------------------------------------------
+
+video 170 - Integrating those functions into the main app
+
+I somehow was stuck in a bug, which I am still not able to fix. But, I found a work-around for it. It was in the destructuing property of the objects.
+
+We basically just plugged in those functions, into our main app.
+
+--------------------------------------------------------------------------------------------------
+
+video 171 - Placing Username everywhere
+
+We did integrate all the usernames, into everything. There were some system messages, that will be sent. For example, when a new user joins, it is better to give him message from the system as - "Hello", rather than from any of the usernames.
+
+Hence, we integrate all that, into our app.
+
+--------------------------------------------------------------------------------------------------
+
+
